@@ -1,0 +1,1 @@
+{"name": "Boum Légendes", "short_name": "Légendes", "start_url": "legendes.html", "display": "fullscreen", "orientation": "landscape", "background_color": "#1b1640", "theme_color": "#1b1640", "icons": [{"src": "assets/leg/icon.png", "sizes": "512x512", "type": "image/png"}]}
