@@ -246,7 +246,7 @@ const NEWH=[
 ['kitsuneo','Kitsunéo','Renard esprit à 3 queues',5,150,4,['orb','Feu follet','Flamme bleue qui rebondit sur un mur.',23,7.5,12,.9,'#7fd4ff'],['blink','Pas fantôme','Se téléporte à l\'endroit visé.'],{b:'float',h:'fox',w:'orb',x:['tails3']},[['Classique','#fff1d6','#ffffff','#7fd4ff'],['Sakura','#ffb3d8','#ffffff','#ff4fb8']]]];
 NEWH.forEach(a=>{const [id,n,sp,rar,hp,spd,w,s,look,pal]=a;CH.push({id,n,sp,rar,hp,spd,fly:look.b=='float'?1:0,w:{k:w[0],n:w[1],d:w[2],dmg:w[3],rng:w[4],ps:w[5],rel:w[6],pc:w[7]},s:{k:s[0],n:s[1],d:s[2]},look,pal})});
 
-const CHM={};CH.forEach(c=>{CHM[c.id]=c;c.cost=RCOST[c.rar]});
+const CHM={};CH.forEach(c=>{CHM[c.id]=c;c.cost=RCOST[c.rar];c.hp=Math.round(c.hp*2.2/10)*10});
 const MODES={gemmes:{n:'Chasse aux gemmes',s:'3 contre 3 · garde 10 gemmes 15 s',d:'gem'},ko:{n:'Duel de K.O.',s:'3 contre 3 · premier à 10 K.O.',d:'ko'},survie:{n:'Survivant',s:'Chacun pour soi · le nuage se resserre',d:'skull'}};
 const ROAD=[60,150,300,500,800,1100,1500,2000,2600,3300,4000,5000];
 
@@ -600,7 +600,7 @@ function endBattle(team){B.phase='end';B.endT=1.4;const order=B.mode=='survie'?[
  setTimeout(()=>{if(B&&B.res)showResults()},1400)}
 
 /* ===== IA ===== */
-const DIFF=[{err:.38,rate:.4,lead:0,think:.3},{err:.18,rate:.65,lead:.6,think:.2},{err:.06,rate:.9,lead:1,think:.12}];
+const DIFF=[{err:.45,rate:.35,lead:0,think:.35},{err:.27,rate:.5,lead:.5,think:.25},{err:.12,rate:.8,lead:1,think:.15}];
 function bpath(p,goal,fly){const sx=Math.round(p.x),sy=Math.round(p.y),gx=clamp(Math.round(goal.x),1,MW-2),gy=clamp(Math.round(goal.y),1,MH-2);const N=MW*MH,prev=new Int16Array(N).fill(-1),seen=new Uint8Array(N),q=[sy*MW+sx];seen[q[0]]=1;
  for(let h=0;h<q.length;h++){const c=q[h],x=c%MW,y=c/MW|0;if(x==gx&&y==gy){const path=[];let k=c;while(k!=q[0]){path.unshift([k%MW,k/MW|0]);k=prev[k]}return path}for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=x+dx,ny=y+dy,n=ny*MW+nx;if(seen[n])continue;const t=B.grid[n];if(solidT(t)||(t==2&&!fly))continue;seen[n]=1;prev[n]=c;q.push(n)}}return null}
 function aiTick(p,dt){const A=p.ai||(p.ai={t:0,path:null,pt:0,str:1,st:0,mx:0,my:0,f:0,s:0,fa:null,sa:null,sd:0,gk:''});
@@ -802,7 +802,7 @@ function renderLobby(){
  const bar=(lab,v,max,txt)=>`<div class="stat"><span>${lab}</span><span class="b"><i style="width:${Math.round(clamp(v/max,0,1)*100)}%"></i></span><span>${txt}</span></div>`;
  const wd={flame:6,laser3:3,blunder:5,shuriken:2}[C.w.k]||1;
  $('#hinfo').innerHTML=`<span class="rar" style="background:${R[1]}">${R[0]}</span><h2 style="color:${R[1]}">${C.n}</h2><p class="sp">${C.sp} · niveau ${lv}${lv>=10?' (max)':''} · ${trOf(SEL)} trophées</p>
-  ${bar('Vie',C.hp*m,320,Math.round(C.hp*m))}${bar('Dégâts',C.w.dmg*wd*m,90,Math.round(C.w.dmg*m)+(wd>1?'×'+wd:''))}${bar('Portée',C.w.rng,10,C.w.rng)}${bar('Vitesse',C.spd,4.3,C.spd>=4?'rapide':C.spd>=3.6?'normale':'lente')}
+  ${bar('Vie',C.hp*m,700,Math.round(C.hp*m))}${bar('Dégâts',C.w.dmg*wd*m,90,Math.round(C.w.dmg*m)+(wd>1?'×'+wd:''))}${bar('Portée',C.w.rng,10,C.w.rng)}${bar('Vitesse',C.spd,4.3,C.spd>=4?'rapide':C.spd>=3.6?'normale':'lente')}
   <div class="abil"><b>Arme : ${C.w.n}.</b> ${C.w.d}</div><div class="abil"><b>Super : ${C.s.n}.</b> ${C.s.d}</div>
   <div class="row">${C.pal.map((p,i)=>{const has=i==0||LG.skins.includes(SEL+i);return `<button class="btn small" data-skin="${i}" style="${sk==i?'outline:3px solid var(--gold)':''}">${p[0]}${has?'':' · 150'}</button>`}).join('')}</div>
   ${own?(lv<10?`<button class="btn teal" id="upBtn">Améliorer → niv. ${lv+1} <span class="coin"><i></i>${60*lv}</span></button>`:''):`<button class="btn gold" id="buyBtn">Débloquer <span class="coin"><i></i>${C.cost}</span></button>`}`;
